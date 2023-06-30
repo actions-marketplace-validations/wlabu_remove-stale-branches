@@ -1,4 +1,4 @@
-""" Script to find stale branches and notify if delete if they are older than 150 days 
+""" Script to find stale branches, notify the author daily, and auto-delete them if they are stale
 """
 import argparse
 import logging
@@ -127,24 +127,23 @@ def send_slack_message(args, slack_reminder):
     """Send slack message to remind users to delete their branches"""
     for user_email in slack_reminder.keys():
         try:
-            if user_email == "gita@coda.io":
-                slack_user_id = get_slack_user_id(args, user_email)
-                if slack_user_id:
-                    branch_url = "https://github.com/"+args.gh_repo+"/compare/main..."
-                    branches = [branch_url + branch['name'] + '\n' for branch in slack_reminder[user_email]]
-                    delete_branch_msg = "git push origin --delete " + ' '.join([branch['name'] for branch in slack_reminder[user_email]])
-                    message = "Hi! The following branches are more than %s days old:\n%s" % (''.join(branches), args.days_slack)
-                    message+="If you would like to keep the branch alive please rename the branch with the prefix `keep-alive-`.\n"
-                    message+="You can do this by running\n`git push origin origin/old_name:refs/heads/keep-alive-old_name && git push origin :old_name`\n"
-                    message+=f"Otherwise please run `{delete_branch_msg}` to delete the branches.\n"
-                    message+=f"If no action is taken, the {'branch' if len(branches)>1 else 'branches' } will be deleted in another %s days." % (args.days_delete-args.days_slack)
-                    headers = {'Authorization': f'Bearer {args.slack_token}'}
-                    data = {'text': message, 'channel': slack_user_id}
-                    res = requests.post(
-                        "https://slack.com/api/chat.postMessage", headers=headers, json=data, timeout=REQUEST_TIMEOUT_SECONDS)
-                    res.raise_for_status()
-                else:
-                    logging.error(f"Slack user id not found for {user_email}")
+            slack_user_id = get_slack_user_id(args, user_email)
+            if slack_user_id:
+                branch_url = "https://github.com/"+args.gh_repo+"/compare/main..."
+                branches = [branch_url + branch['name'] + '\n' for branch in slack_reminder[user_email]]
+                delete_branch_msg = "git push origin --delete " + ' '.join([branch['name'] for branch in slack_reminder[user_email]])
+                message = "Hi! The following branches are more than %s days old:\n%s" % (''.join(branches), args.days_slack)
+                message+="If you would like to keep the branch alive please rename the branch with the prefix `keep-alive-`.\n"
+                message+="You can do this by running\n`git push origin origin/old_name:refs/heads/keep-alive-old_name && git push origin :old_name`\n"
+                message+=f"Otherwise please run `{delete_branch_msg}` to delete the branches.\n"
+                message+=f"If no action is taken, the {'branch' if len(branches)>1 else 'branches' } will be deleted in another %s days." % (args.days_delete-args.days_slack)
+                headers = {'Authorization': f'Bearer {args.slack_token}'}
+                data = {'text': message, 'channel': slack_user_id}
+                res = requests.post(
+                    "https://slack.com/api/chat.postMessage", headers=headers, json=data, timeout=REQUEST_TIMEOUT_SECONDS)
+                res.raise_for_status()
+            else:
+                logging.error(f"Slack user id not found for {user_email}")
         except requests.exceptions.HTTPError as err:
             logging.error(err)
 
