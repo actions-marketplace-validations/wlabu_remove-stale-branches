@@ -153,9 +153,9 @@ def parse_args():
         description='Find old github branches', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '--gh-repo', help='The owner and repository name', default=os.getenv('GITHUB_REPOSITORY'))
-    parser.add_argument('--gh-token', help='Github API Token', default=os.getenv('GITHUB_TOKEN'))
+    parser.add_argument('--gh-token', help='Github API Token', default=os.getenv('GITHUB_TOKEN_FOR_STALE_BRANCHES'))
     parser.add_argument(
-        '--slack-token', help='Slack token', default=os.getenv('SLACK_TOKEN'))
+        '--slack-token', help='Slack token', default=os.getenv('SLACK_TOKEN_FOR_STALE_BRANCHES'))
     parser.add_argument(
         '--days-delete', help='Number of days to delete')
     parser.add_argument(
