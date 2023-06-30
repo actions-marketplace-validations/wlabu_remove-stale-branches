@@ -1,26 +1,15 @@
-# Delete and Notify of Stale Branches Using Github Actions
-Add this Github Action to your repo to notify you when branches are stale and delete them if no action is taken. 
-If you would like to keep your branch alive, you may prefix it with `keep-alive-` 
-It pulls the slack credentials from Github, thus your slack and github account must be associated with the same email.
+# Remove stale branches
+Github Action to notify people when branches are stale, and delete the branch if no action is taken.
 
-## Usage
+> This action searches Slack for the branch author's email address (i.e.: their Git user email), and notifies them if found.
 
-You can use the action from this example repository:
+## Requirements
 
-```yml
-name: Purge Branches
-on:
-  schedule:
-    - cron: '0 10 * * *' # every day @ 10 AM UTC
-jobs:
-  purgeBranches:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete & Notify Branches
-        uses: gita-vahdatinia/purge-branchn@v1
-        with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            days-to-notify: 50
-            days-to-delete: 100
+Along with installing the action in your project's `.github` directory, you will need to create 2 environment variables:
+- `GITHUB_TOKEN`: An access token with `repo` permissions
+- `SLACK_TOKEN`: An access token with the following "Bot Token Scopes":
+    - chat:write
+    - users:read
+    - users:read.email
 
-```
+> This means you will most probably need to create a Slack app, if you don't have a token already.
