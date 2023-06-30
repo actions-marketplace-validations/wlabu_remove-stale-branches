@@ -6,8 +6,8 @@ Github Action to notify people when branches are stale, and delete the branch if
 ## Requirements
 
 Along with installing the action in your project's `.github` directory, you will need to create 2 environment variables:
-- `GITHUB_TOKEN`: An access token with `repo` permissions
-- `SLACK_TOKEN`: An access token with the following "Bot Token Scopes":
+- `GH_TOKEN_FOR_STALE_BRANCHES`: An access token with `repo` permissions
+- `SLACK_TOKEN_FOR_STALE_BRANCHES`: An access token with the following "Bot Token Scopes":
     - chat:write
     - users:read
     - users:read.email
